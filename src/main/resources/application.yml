@@ -1,4 +1,4 @@
-#MySQL 세팅
+#MySQL 셋팅
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
