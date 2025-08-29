@@ -9,6 +9,14 @@
 <body>
 <!-- 모든 작업 컨텐츠가 들어오는 곳 -->
 <div layout:fragment="content" class="content">
+    <!--     삭제 및 수정 후 메세지 보여주는 영역-->
+    <div th:unless="${msg == null}">
+        <!--        메세지가 null이 아닐 시 밑의 실행문 실행     -->
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
     <table class="table">
         <thead>
         <tr>
@@ -33,7 +41,7 @@
         <ul class="pagination">
             <!--  왼쪽 끝 이동 단추 -->
             <li class="page-item"
-            th:classappend="${articles.number}<=0? 'disabled'">
+                th:classappend="${articles.number}<=0? 'disabled'">
                 <a class="page-link"
                    th:href="@{|/articles?page=${articles.number-1}|}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
@@ -54,7 +62,7 @@
             <li class="page-item">
                 <a class="page-link"
                    th:href="@{|/articles?page=${articles.number+1}|}"
-                    aria-label="Next">
+                   aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
