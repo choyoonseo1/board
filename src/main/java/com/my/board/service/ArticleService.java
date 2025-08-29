@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+
 import java.util.Collections;
 import java.util.List;
 @Service
@@ -47,5 +48,12 @@ public class ArticleService {
 
     public void deleteArticle(Long id) {
         dao.deleteArticle(id);
+    }
+
+    public void updateArticle(ArticleDto dto) {
+            // 1. dto를 바로 dao까지 보낸다.
+            // 2. dto의 아이디를 뽑아서 article을 찾는다.
+            // 3. 찾은 게시글의 타이틀과 content를 dto것으로 바꾼다.
+        dao.updateArticle(dto);
     }
 }

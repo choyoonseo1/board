@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Article</title>
 </head>
 <body>
+
 <table class="table m-2">
     <thead>
     <tr>
@@ -15,55 +16,80 @@
     </thead>
     <tbody>
     <tr>
+        <!-- 컨트롤러에서 model.addAttribute("dto", articleDto) 라고 보냈다는 가정 -->
         <th scope="row" th:text="${dto.id}">1</th>
         <td th:text="${dto.title}">제목111</td>
-        <td th:text="${dto.content}">내용 1111</td>
+        <td th:text="${dto.content}">내용1111</td>
     </tr>
     </tbody>
 </table>
+
 <a th:href="@{|/articles/${dto.id}/update|}" class="btn btn-primary">Edit</a>
 <a th:href="@{|/articles/${dto.id}/delete|}" class="btn btn-danger">Delete</a>
-<a href="/articles">Go to Article List</a>
+<a th:href="@{/articles}">Go to Article List</a>
+
 <br><br>
-<!--  댓글  -->
-<div class="card m-2" th:each="comment : @{dto.comments}" th:object="${comment}">
-    <div class="card-header">
-        <!--  닉네임 -->
-        <span th:text="*{nickname}">Featured</span>
-        <a class="btn btn-sm btn-outline-primary">수정</a>
-        <a class="btn btn-sm btn-outline-primary" id="comment-delete-btn">삭제</a>
-    </div>
-    <!--    댓글의 내용(body)  -->
-    <div class="card-body">
-        <p class="card-text" th:text="*{body}">
-            With supporting text below as a natural lead-in to additional content.</p>
-    </div>
+
+<!-- 댓글 목록 -->
+<div class="card m-2"
+     th:each="comment : ${dto.comments}" th:object="${comment}">
+<div class="card-header">
+    <span th:text="*{nickname}">닉네임</span>
+    <a class="btn btn-sm btn-outline-primary">수정</a>
+
+    <!-- ✅ id 대신 class 사용 + data 속성으로 식별자 전달 -->
+    <a class="btn btn-sm btn-outline-primary comment-delete-btn"
+       th:attr="data-comment-id=*{id}">삭제</a>
 </div>
 
-<div class="card m-2">
-    <div class="card-header">
-        <span>Featured</span>
-        <a class="btn btn-sm btn-outline-primary">수정</a>
-        <a class="btn btn-sm btn-outline-primary" id="comment-delete-btn">삭제</a>
-    </div>
-    <div class="card-body">
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-    </div>
+<div class="card-body">
+    <p class="card-text" th:text="*{body}">본문</p>
+</div>
 </div>
 
-<form>
-    <!-- 닉네임 입력-->
+<!-- (데모용) 아래 정적 카드 한 블럭은 지우세요. 중복 요소/중복 id 원인 -->
+<!-- ...불필요한 정적 카드 삭제... -->
+
+<!-- 새 댓글 작성 -->
+<form id="new-comment-form">
     <div class="m-2">
         <label class="form-label">닉네임</label>
-        <input type="text" class="form-control" id="new-comment-nickname">
+        <input type="text" class="form-control" id="new-comment-nickname" required>
     </div>
-    <!-- 댓글 본문 입력-->
     <div class="m-2">
         <label class="form-label">댓글 내용</label>
-        <textarea type="text" class="form-control" rows="3" id="new-comment-body"></textarea>
+        <textarea class="form-control" rows="3" id="new-comment-body" required></textarea>
     </div>
-    <!-- 전송버튼-->
     <button type="button" class="btn btn-primary" id="comment-create-btn">댓글 작성</button>
 </form>
+
+<script>
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.comment-delete-btn');
+      if (!btn) return;
+
+      const commentId = btn.dataset.commentId;
+      if (!commentId) return;
+
+      if (!confirm('댓글을 삭제할까요?')) return;
+
+      try {
+        const res = await fetch(`/comments/${commentId}`, {
+          method: 'DELETE',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+            // CSRF 사용 시 아래 2줄 추가
+            // 'X-CSRF-TOKEN': /* [[${_csrf.token}]] */ '',
+          }
+        });
+        if (res.ok) location.reload();
+        else alert('삭제에 실패했습니다.');
+      } catch (err) {
+        console.error(err);
+        alert('삭제 중 오류가 발생했습니다.');
+      }
+    });
+</script>
+
 </body>
 </html>
