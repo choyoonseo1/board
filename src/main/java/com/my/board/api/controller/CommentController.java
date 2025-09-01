@@ -43,7 +43,7 @@ public class CommentController {
     }
     //2. 댓글 생성(POST)
     @PostMapping("/api/articles/{articleId}/comments")
-    public ResponseEntity<?> commentCreate(@PathVariable("articleId"), Long articleId,
+    public ResponseEntity<?> commentCreate(@PathVariable("articleId")Long articleId,
                                            @RequestBody CommentDto dto) {
         commentService.insertComment(articleId, dto);
         return ResponseEntity.status(HttpStatus.OK)
